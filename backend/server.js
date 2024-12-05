@@ -7,6 +7,16 @@ const cors = require("cors");
 dotenv.config();
 const app = express();
 
+// Middlewares
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+// Routes
+app.get("/", (req, res) => {
+  res.send("Hello to MERN Stack");
+});
+
 const PORT = process.env.PORT || 5000;
 
 mongoose
