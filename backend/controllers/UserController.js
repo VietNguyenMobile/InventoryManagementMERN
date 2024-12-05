@@ -34,7 +34,7 @@ const registerUser = asyncHandler(async (req, res) => {
     email,
     password,
   });
-  
+
   // Generate token
   const token = generateToken(user._id);
 
@@ -63,4 +63,45 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { registerUser };
+// Login User
+const loginUser = asyncHandler(async (req, res) => {
+  res.send("Login User");
+  // const { email, password } = req.body;
+  // // Validation
+  // if (!email || !password) {
+  //   res.status(400);
+  //   throw new Error("Please fill in all required fields");
+  // }
+  // // Check if user exists in the database or not
+  // const user = await User.findOne({ email });
+  // if (!user) {
+  //   res.status(400);
+  //   throw new Error("Invalid credentials");
+  // }
+  // // Check if password is correct
+  // const isMatch = await user.matchPassword(password);
+  // if (!isMatch) {
+  //   res.status(400);
+  //   throw new Error("Invalid credentials");
+  // }
+  // // Generate token
+  // const token = generateToken(user._id);
+  // // Send HTTP-only cookie
+  // res.cookie("token", token, {});
+  // console.log("User logged in: ", user);
+  // if (user) {
+  //   res.status(200).json({
+  //     _id: user._id,
+  //     name: user.name,
+  //     email: user.email,
+  //     token,
+  //     photo: user.photo,
+  //     bio: user.bio,
+  //   });
+  // } else {
+  //   res.status(400);
+  //   throw new Error("Invalid user data");
+  // }
+});
+
+module.exports = { registerUser, loginUser };
