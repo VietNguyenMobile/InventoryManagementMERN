@@ -146,4 +146,23 @@ const getUser = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { registerUser, loginUser, logout, getUser };
+const loginStatus = asyncHandler(async (req, res) => {
+  // res.send("Login Status");
+  const token = req.cookies.token;
+  if (!token) {
+    // res.status(401);
+    // throw new Error("Not authorized, please login");
+    return res.json(false);
+  }
+
+  // Verify token
+  const verified = jwt.verify(token, process.env.JWT_SECRET);
+
+  if (verified) {
+    return res.json(true);
+  }
+
+  return res.json(false);
+});
+
+module.exports = { registerUser, loginUser, logout, getUser, loginStatus };
