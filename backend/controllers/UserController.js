@@ -1,6 +1,14 @@
 const asyncHandler = require("express-async-handler");
+const dotenv = require("dotenv");
 const User = require("../models/UserModel");
-const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+
+dotenv.config();
+const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: "3h",
+  });
+};
 
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
@@ -20,23 +28,20 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error("User already exists");
   }
 
-  // Encrypt password before saving to database
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(password, salt);
-
   // Create new user
   const user = await User.create({
     name,
     email,
-    password: hashedPassword,
+    password,
   });
+  const token = generateToken(user._id);
   console.log("New user created: ", user);
   if (user) {
     res.status(201).json({
       _id: user._id,
       name: user.name,
       email: user.email,
-      // token: generateToken(user._id),
+      token,
       photo: user.photo,
       bio: user.bio,
     });
