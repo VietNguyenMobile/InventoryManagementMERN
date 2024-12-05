@@ -108,7 +108,7 @@ const loginUser = asyncHandler(async (req, res) => {
       photo: user.photo,
       phone: user.phone,
       bio: user.bio,
-      token
+      token,
     });
   } else {
     res.status(400);
@@ -116,4 +116,16 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { registerUser, loginUser };
+const logout = asyncHandler(async (req, res) => {
+  // res.clearCookie("token");
+  res.cookie("token", "", {
+    path: "/", // root path
+    expires: new Date(0), // 3 hours
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  });
+  return res.status(200).json({ message: "Successfully Logged Out" });
+});
+
+module.exports = { registerUser, loginUser, logout };
