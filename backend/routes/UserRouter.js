@@ -11,6 +11,7 @@ const {
   loginStatus,
   updateUser,
   changePassword,
+  forgotPassword,
 } = require("../controllers/UserController");
 
 router.post("/register", registerUser);
@@ -20,6 +21,7 @@ router.get("/getUser", protect, getUser);
 router.get("/loggedin", loginStatus);
 router.patch("/updateuser", protect, updateUser);
 router.patch("/changepassword", protect, changePassword);
+router.post("/forgotpasword", forgotPassword);
 
 // Error Middleware
 router.use(errorHandler);
