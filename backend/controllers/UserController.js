@@ -203,38 +203,45 @@ const updateUser = asyncHandler(async (req, res) => {
 });
 
 const changePassword = asyncHandler(async (req, res) => {
-  res.send("Change Password");
-  // const { oldPassword, newPassword } = req.body;
-  // const user = await User.findById(req.user._id);
-  // if (user) {
-  //   const isMatch = await bcrypt.compare(oldPassword, user.password);
-  //   if (!isMatch) {
-  //     res.status(400);
-  //     throw new Error("Invalid old password");
-  //   }
-  //   user.password = newPassword;
-  //   const updatedUser = await user.save();
-  //   const token = generateToken(updatedUser._id);
-  //   res.cookie("token", token, {
-  //     path: "/", // root path
-  //     expires: new Date(Date.now() + 3 * 60 * 60 * 1000), // 3 hours
-  //     httpOnly: true,
-  //     secure: true,
-  //     sameSite: "none",
-  //   });
-  //   res.status(200).json({
-  //     _id: updatedUser._id,
-  //     name: updatedUser.name,
-  //     email: updatedUser.email,
-  //     photo: updatedUser.photo,
-  //     phone: updatedUser.phone,
-  //     bio: updatedUser.bio,
-  //     token,
-  //   });
-  // } else {
-  //   res.status(401);
-  //   throw new Error("User not found");
-  // }
+  // res.send("Change Password");
+  const { oldPassword, newPassword } = req.body;
+
+  if (!oldPassword || !newPassword) {
+    res.status(400);
+    throw new Error("Please fill in all required fields");
+  }
+
+  const user = await User.findById(req.user._id);
+
+  if (user) {
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
+      res.status(400);
+      throw new Error("Invalid old password");
+    }
+    user.password = newPassword;
+    const updatedUser = await user.save();
+    const token = generateToken(updatedUser._id);
+    res.cookie("token", token, {
+      path: "/", // root path
+      expires: new Date(Date.now() + 3 * 60 * 60 * 1000), // 3 hours
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
+    res.status(200).json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      photo: updatedUser.photo,
+      phone: updatedUser.phone,
+      bio: updatedUser.bio,
+      token,
+    });
+  } else {
+    res.status(401);
+    throw new Error("User not found, please signup");
+  }
 });
 
 module.exports = {
