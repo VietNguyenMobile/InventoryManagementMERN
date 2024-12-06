@@ -10,11 +10,11 @@ const tokenSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
-  createAt: {
+  createdAt: {
     type: Date,
     required: true,
   },
-  expireAt: {
+  expiresAt: {
     type: Date,
     required: true,
   },

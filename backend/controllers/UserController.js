@@ -3,6 +3,9 @@ const dotenv = require("dotenv");
 const User = require("../models/UserModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const Token = require("../models/TokenModel");
+const crypto = require("crypto");
+const sendEmail = require("../utils/sendEmail");
 
 dotenv.config();
 const generateToken = (id) => {
@@ -258,22 +261,81 @@ const changePassword = asyncHandler(async (req, res) => {
 // #4. Create controller function
 
 const forgotPassword = asyncHandler(async (req, res) => {
-  res.send("Forgot Password");
-  // const { email } = req.body;
-  // const user = await
-  // if (!email) {
-  //   res.status(400);
-  //   throw new Error("Please fill in all required fields");
-  // }
-  // const user = await User.findOne({ email });
-  // if (!user) {
-  //   res.status(400);
-  //   throw new Error("User does not exist");
-  // }
-  // Generate token
+  // res.send("Forgot Password");
+  const { email } = req.body;
+  if (!email) {
+    res.status(400);
+    throw new Error("Please fill in all required fields");
+  }
+  const user = await User.findOne({ email });
+  console.log("user: ", user);
+  if (!user) {
+    res.status(400);
+    throw new Error("User does not exist");
+  }
 
-})
+  // Delete token if it exists
+  const token = await Token.findOne({ userId: user._id });
+  console.log("Delete token: ", token);
+  if (token) {
+    await token.deleteOne();
+    console.log("Deleted token !!!");
+  }
 
+  // Create Reset Token
+  const resetToken = crypto.randomBytes(32).toString("hex") + user._id;
+  console.log("resetToken: ", resetToken);
+
+  // Hash reset token and save to database
+  const hashedResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+  console.log("hashedResetToken: ", hashedResetToken);
+
+  await Token.create({
+    userId: user._id,
+    token: hashedResetToken,
+    createdAt: Date.now(),
+    expiresAt: Date.now() + 10 * 60 * 1000, // 10 minutes
+  });
+
+  const resetUrl = `${process.env.FRONTEND_URL}/resetpassword/${resetToken}`;
+  console.log("resetUrl: ", resetUrl);
+
+  // Send Email
+  const message = `
+        <h2>Hello ${user.name}</h2>
+        <p>Please use the url below to reset your password</p>
+        <p>This reset link is valid for only 30 minutes.</p>
+        <a href=${resetUrl} clicktracking=off>${resetUrl}</a>
+        <p>If you did not request this, please ignore this email and your password will remain unchanged.</p>
+        <p>Thanks</p>
+        <p>Team Renesas</p>
+        `;
+
+  const subject = "Renesas Password Reset Request";
+  const sendTo = user.email;
+  const sentFrom = process.env.EMAIL_USER;
+  const replyTo = "noreply@renesas.com";
+
+  try {
+    await sendEmail({
+      subject,
+      message,
+      sendTo,
+      sentFrom,
+      replyTo,
+    });
+    res
+      .status(200)
+      .json({ success: true, message: "Reset link sent to your email" });
+  } catch (error) {
+    console.log("Error: ", error);
+    res.status(500);
+    throw new Error("Email could not be sent, please try again");
+  }
+});
 
 module.exports = {
   registerUser,
@@ -283,6 +345,5 @@ module.exports = {
   loginStatus,
   updateUser,
   changePassword,
-  forgotPassword
+  forgotPassword,
 };
-

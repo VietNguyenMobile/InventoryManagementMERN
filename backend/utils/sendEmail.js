@@ -2,38 +2,32 @@ const nodemailer = require("nodemailer");
 const dotenv = require("dotenv");
 dotenv.config();
 
-const sendEmail = async ({
-  email,
-  subject,
-  message,
-  sendTo,
-  sentFrom,
-  replyTo,
-}) => {
-  let testAccount = await nodemailer.createTestAccount();
-  console.log("testAccount: ", testAccount);
-
+const sendEmail = async ({ subject, message, sendTo, sentFrom, replyTo }) => {
+  console.log("process.env.EMAIL_HOST: ", process.env.EMAIL_HOST);
+  console.log("process.env.EMAIL_USER: ", process.env.EMAIL_USER);
+  console.log("process.env.EMAIL_PASS: ", process.env.EMAIL_PASS);
+  console.log("process.env.SMTP_PORT: ", process.env.SMTP_PORT);
   // create reusable transporter object using the default SMTP transport
   const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT,
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true, // true for 465, false for other ports
     auth: {
-      user: process.env.SMTP_EMAIL,
-      pass: process.env.SMTP_PASSWORD,
-    },
-    tls: {
-      rejectUnauthorized: false,
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
     },
   });
+  console.log("transporter: ", transporter);
 
   // send mail with defined transport object
   const mailOptions = {
-    from: sentFrom,
+    from: `"Nguyen Quốc Việt"<${process.env.EMAIL_USER}>`,
     to: sendTo,
-    replyTo: replyTo,
+    // replyTo: process.env.EMAIL_USER,
     subject: subject,
     html: message,
   };
+  console.log("mailOptions: ", mailOptions);
   await transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
       console.log("Error: ", error);

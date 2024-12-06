@@ -21,7 +21,7 @@ router.get("/getUser", protect, getUser);
 router.get("/loggedin", loginStatus);
 router.patch("/updateuser", protect, updateUser);
 router.patch("/changepassword", protect, changePassword);
-router.post("/forgotpasword", forgotPassword);
+router.post("/forgotpassword", forgotPassword);
 
 // Error Middleware
 router.use(errorHandler);
