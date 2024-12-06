@@ -165,4 +165,45 @@ const loginStatus = asyncHandler(async (req, res) => {
   return res.json(false);
 });
 
-module.exports = { registerUser, loginUser, logout, getUser, loginStatus };
+const updateUser = asyncHandler(async (req, res) => {
+  res.send("Update User");
+  // const user = await User.findById(req.user._id);
+  // if (user) {
+  //   user.name = req.body.name || user.name;
+  //   user.email = req.body.email || user.email;
+  //   if (req.body.password) {
+  //     user.password = req.body.password;
+  //   }
+  //   user.photo = req.body.photo || user.photo;
+  //   user.phone = req.body.phone || user.phone;
+  //   user.bio = req.body.bio || user.bio;
+
+  //   const updatedUser = await user.save();
+  //   const token = generateToken(updatedUser._id);
+  //   res.cookie("token", token, {
+  //     path: "/", // root path
+  //     expires: new Date(0), // 3 hours
+  //     httpOnly: true,
+  //     secure: true,
+  //     sameSite: "none",
+  //   });
+  //   res.status(200).json({
+  //     _id: updatedUser._id,
+  //     name: updatedUser.name,
+  //     email: updatedUser.email,
+  //     photo: updatedUser.photo,
+  //     phone: updatedUser.phone,
+  //     bio: updatedUser.bio,
+  //     token,
+  //   });
+  // }
+});
+
+module.exports = {
+  registerUser,
+  loginUser,
+  logout,
+  getUser,
+  loginStatus,
+  updateUser,
+};
