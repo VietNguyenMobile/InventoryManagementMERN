@@ -1,5 +1,6 @@
 Create file .env back end
-ENCRYPTION_KEY=
+
+```ENCRYPTION_KEY=
 PORT=
 MONGODB_URI=
 NODE_ENV=development
@@ -9,3 +10,4 @@ EMAIL_USER=
 EMAIL_PASS=
 SMTP_PORT=
 FRONTEND_URL=
+```
